@@ -1,0 +1,66 @@
+  <itemtype code="Student"
+                  autocreate="true" generate="true" >
+            <description>Sample Student table to understand all attributes</description>
+            <deployment table="Student" typecode="13115"/>
+            <attributes>
+                <attribute qualifier="StdId" type="localized:java.lang.String">
+                    <modifiers optional="false" unique="true"/>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="StdName" type="java.lang.String">
+                    <modifiers optional="false" unique="false" search="false"/>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="MobNo" type="java.lang.String">
+                    <modifiers/>
+                    <persistence type="property"/>
+                </attribute>
+                <attribute qualifier="Age" type="java.lang.Integer">
+                    <modifiers initial="true" />
+                    <persistence type="dynamic" attributeHandler="StudentAge"/>
+                </attribute>
+                <attribute qualifier="BirthYear" type="java.lang.Integer">
+                    <modifiers initial="true" />
+                    <persistence type="property"/>
+                </attribute>
+
+            </attributes>
+        </itemtype>
+
+
+//2nd in core.attribute package create class
+
+
+package org.training.core.attribute;
+
+import de.hybris.platform.servicelayer.model.attribute.AbstractDynamicAttributeHandler;
+import org.training.core.model.StudentModel;
+
+import java.time.LocalDate;
+
+public class StudentAgeHandler extends AbstractDynamicAttributeHandler<Integer, StudentModel> {
+
+    @Override
+    public Integer get(final StudentModel model)
+    {
+        int customerSiteAge = 0;
+        try
+        {
+             int year = LocalDate.now().getYear();
+             int year1 = model.getBirthYear();
+             customerSiteAge = year-year1;
+        }
+        catch (final Exception e)
+        {
+            e.printStackTrace();
+        }
+        return customerSiteAge;
+    }
+}
+
+
+
+//3rd bean in spring.xml
+
+<bean id="StudentAge"
+		  class="org.training.core.attribute.StudentAgeHandler"/>
